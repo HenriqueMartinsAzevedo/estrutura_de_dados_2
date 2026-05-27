@@ -63,7 +63,6 @@ int inserir(No *pai, No *filho){
     aux->prox_irmao = filho;
 
     return 1;
-
 }
 int main(){
     return 0;
