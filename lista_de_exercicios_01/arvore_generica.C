@@ -47,14 +47,14 @@ No* CriarNO(int valor){
     return novo;
 }
 
-int inserir(No *pai, No *filho){
+int inserir(No *raiz, No *filho){
     //17 - Inicializando uma árvore vazia.
-    if(pai->prim_filho == NULL){
-        pai->prim_filho = filho;
+    if(raiz->prim_filho == NULL){
+        raiz->prim_filho = filho;
     }
 
     //18 - Inserindo um filho no nó.
-    No *aux = pai->prim_filho; // A VAR aux é para não perder a referência do primeiro irmão.
+    No *aux = raiz->prim_filho; // A VAR aux é para não perder a referência do primeiro irmão.
 
     while(aux->prox_irmao != NULL){
         aux = aux->prox_irmao;
@@ -64,6 +64,45 @@ int inserir(No *pai, No *filho){
 
     return 1;
 }
+//19 - Função para contar os Nós 
+
+void imprimir(No *raiz){
+    if(raiz == NULL){
+        return;
+    }
+
+    printf("%d ", raiz->valor);
+
+    imprimir(raiz->prim_filho);
+    imprimir(raiz->prox_irmao);
+}
+
+int contarNo(No *raiz){
+    if(raiz == NULL){
+        printf("Essa árvore não possui nós!");
+        return 0;
+    }
+    return 1 + contarNo(raiz->prim_filho) + contarNo(raiz->prox_irmao);
+}
+//20 - Função recursiva para calcular a altura da árvore
 int main(){
+
+    No *A = CriarNO(10);
+    No *B = CriarNO(20);
+    No *C = CriarNO(30);
+    No *D = CriarNO(40);
+    No *E = CriarNO(50);
+
+    inserir(A, B);
+    inserir(A, C);
+    inserir(A, D);
+
+    inserir(C, E);
+
+    printf("Elementos da árvore:\n");
+    imprimir(A);
+
+    printf("\n\nQuantidade de nós: %d\n", contarNo(A));
+
     return 0;
 }
