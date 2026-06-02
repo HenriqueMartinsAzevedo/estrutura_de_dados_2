@@ -99,8 +99,8 @@ int alturaDaArvore(No *raiz){
     else{return alturaIrmao;
     }
 }
-//21 - Função para contar as quantidades de folha na árvore
 
+//21 - Função para contar as quantidades de folha na árvore
 int contarFolhas(No *raiz){
     if(raiz == NULL){
         return 0;
@@ -113,9 +113,19 @@ int contarFolhas(No *raiz){
     return contarFolhas(raiz->prim_filho) + contarFolhas(raiz->prox_irmao);
 }
 
+//22 - Função para verificar se existe um valor na árvore
+int verificarValor(No *raiz){
+    if(raiz != NULL){
+        printf("%d\n", raiz->valor);
+        verificarValor(raiz->prim_filho);
+        verificarValor(raiz->prox_irmao);
+        return 1;
+    }
+    return 0;
+}
 int main(){
 
-    No *A = CriarNO(10);
+    No *A = CriarNO(10); //raiz
     No *B = CriarNO(20);
     No *C = CriarNO(30);
     No *D = CriarNO(40);
@@ -139,7 +149,11 @@ int main(){
 
     printf("\nQuantidade de Folhas: %d\n", contarFolhas(A));
 
+    printf("\n");
 
-
+    if(verificarValor(A) == 1){
+        printf("\nHá valores na árvore.");
+    }
+    else printf("Não há valores na árvore");
     return 0;
 }
