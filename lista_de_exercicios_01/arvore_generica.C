@@ -25,6 +25,8 @@
 // Folha: 1, 7, 12, 16, 27.
 // Altura: Nível 3.
 // Grau da árvore: 3.
+
+
 #include <stdlib.h>
 #include <stdio.h>
 //16
@@ -123,6 +125,38 @@ int verificarValor(No *raiz){
     }
     return 0;
 }
+//23 - Função para imprimir os nós por nível.
+int maior(int a, int b){
+    if (a > b) return a;
+    else return b;
+}
+
+
+void imprimirNivel(No *raiz, int nivel){
+    if(raiz == NULL)
+        return;
+
+    if(nivel == 0){
+        printf("%d ", raiz->valor);
+        return;
+    }
+
+    No *filho = raiz->prim_filho;
+
+    while(filho != NULL){
+        imprimirNivel(filho, nivel - 1);
+        filho = filho->prox_irmao;
+    }
+}
+
+void imprimirPorNivel(No *raiz){
+    int h = alturaDaArvore(raiz);
+
+    for(int i = 0; i <= h; i++){
+        imprimirNivel(raiz, i);
+        printf("\n");
+    }
+}
 int main(){
 
     No *A = CriarNO(10); //raiz
@@ -152,8 +186,10 @@ int main(){
     printf("\n");
 
     if(verificarValor(A) == 1){
-        printf("\nHá valores na árvore.");
+        printf("\nHá valores na árvore.\n");
     }
-    else printf("Não há valores na árvore");
+    else printf("Não há valores na árvore\n");
+        
+    imprimirPorNivel(A);
     return 0;
 }
