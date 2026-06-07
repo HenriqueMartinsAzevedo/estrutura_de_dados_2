@@ -10,6 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//36 - implemente a estrutura de um nó de árvore binária.
+typedef struct No{
+    int valor;
+    struct No *esq;
+    struct No *dir;
+}No;
+
 int main(){
     return 0;
 }
