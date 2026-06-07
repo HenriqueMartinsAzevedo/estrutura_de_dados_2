@@ -26,6 +26,7 @@
 // Altura: Nível 3.
 // Grau da árvore: 3.
 
+//24 - A recursão é muito utilizada em árvores devido ao fato de que elas possuem subárvores com a mesma estrutura da árvore formada por nós pai e filhos. Isso permite que o algoritmo seja reutilizado em diferentes partes da árvore.
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -131,7 +132,6 @@ int maior(int a, int b){
     else return b;
 }
 
-
 void imprimirNivel(No *raiz, int nivel){
     if(raiz == NULL)
         return;
@@ -157,9 +157,19 @@ void imprimirPorNivel(No *raiz){
         printf("\n");
     }
 }
+//25 - Implemente uma função para destruir/liberar toda a árvore
+void liberarArvore(No *raiz){
+    if(raiz == NULL){
+        return;
+    }
+
+    liberarArvore(raiz->prim_filho);
+    liberarArvore(raiz->prox_irmao);
+    free(raiz);
+}
 int main(){
 
-    No *A = CriarNO(10); //raiz
+    No *A = CriarNO(10); 
     No *B = CriarNO(20);
     No *C = CriarNO(30);
     No *D = CriarNO(40);
