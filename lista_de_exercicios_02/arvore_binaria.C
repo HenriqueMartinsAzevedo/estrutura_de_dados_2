@@ -57,7 +57,14 @@ void emOrdem(No *raiz) {
         emOrdem(raiz->dir);
     }
 }
-
+//40 - Implemente o percurso pós-ordem
+void posOrdem(No *raiz){
+    if(raiz!=NULL){
+        posOrdem(raiz->esq);
+        posOrdem(raiz->dir);
+        printf("%d", raiz->valor);
+    }
+}
 int main(){
 
     No *raiz = criarNo(10);
