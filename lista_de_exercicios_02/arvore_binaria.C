@@ -30,16 +30,26 @@ No* inserir(No *raiz, int valor, int lado){
     if(raiz == NULL)
         return criarNo(valor);
 
+    //Se o lado for 1, insira a esquerda
     if(lado == 1){
         if(raiz->esq == NULL)
             raiz->esq = criarNo(valor);
     }
+    //Se o lado for 2, insira a direita
     else if(lado == 2){
         if(raiz->dir == NULL)
             raiz->dir = criarNo(valor);
     }
 
     return raiz;
+}
+void imprimir(No *raiz){
+    if(raiz == NULL) return ;
+    
+    printf("%d ", raiz->valor);
+    imprimir(raiz->esq);
+    imprimir(raiz->dir);
+    
 }
 //38 - Implemente o percurso em pré-ordem
 void preOrdem(No *raiz) {
@@ -65,6 +75,14 @@ void posOrdem(No *raiz){
         printf("%d", raiz->valor);
     }
 }
+//41 - Crie uma função para contar os número de nós da árvore binária.
+int contarNos(No *raiz){
+    if(raiz == NULL){
+        return 0;
+    }
+
+    return 1 + contarNos(raiz->esq) + contarNos(raiz->dir);
+}
 int main(){
 
     No *raiz = criarNo(10);
@@ -76,6 +94,5 @@ int main(){
     inserir(raiz->esq, 8, 2);     //inserir a direita de 5
 
     imprimir(raiz);
-
     return 0;
 }
