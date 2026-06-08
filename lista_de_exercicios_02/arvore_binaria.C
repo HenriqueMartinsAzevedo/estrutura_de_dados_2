@@ -16,7 +16,39 @@ typedef struct No{
     struct No *esq;
     struct No *dir;
 }No;
+//37 - Crie uma função para inserir os nós manualmente em uma árvore binária.
+No* criarNo(int valor){
+    No* novo = (No*) malloc(sizeof(No));
 
+    novo->valor = valor;
+    novo->esq = NULL;
+    novo->dir = NULL;
+    return novo; 
+}
+No* inserir(No *raiz, int valor, char lado){
+    if(raiz == NULL){
+        return criarNo(valor);
+    }
+
+    if(lado == 'e' && raiz->esq == NULL){
+        raiz->esq = criarNo(valor);
+    }
+
+    else if(lado == 'd' && raiz->dir == NULL){
+        raiz->dir = criarNo(valor);
+    }
+    
+    return raiz;
+}
 int main(){
+
+    No *raiz = criarNo(10);
+
+    inserir(raiz, 5, 'e');
+    inserir(raiz, 20, 'd');
+
+    inserir(raiz->esq, 3, 'e');
+    inserir(raiz->esq, 8, 'd');
+    
     return 0;
 }
