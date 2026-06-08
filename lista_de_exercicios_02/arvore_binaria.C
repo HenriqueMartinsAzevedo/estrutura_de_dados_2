@@ -49,6 +49,14 @@ void preOrdem(No *raiz) {
         preOrdem(raiz->dir);
     }
 }
+//39 - Implemente o percurso em ordem
+void emOrdem(No *raiz) {
+    if (raiz != NULL) {
+        emOrdem(raiz->esq);
+        printf("%d ", raiz->valor);
+        emOrdem(raiz->dir);
+    }
+}
 
 int main(){
 
