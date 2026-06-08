@@ -25,30 +25,34 @@ No* criarNo(int valor){
     novo->dir = NULL;
     return novo; 
 }
-No* inserir(No *raiz, int valor, char lado){
-    if(raiz == NULL){
+No* inserir(No *raiz, int valor, int lado){
+
+    if(raiz == NULL)
         return criarNo(valor);
+
+    if(lado == 1){
+        if(raiz->esq == NULL)
+            raiz->esq = criarNo(valor);
+    }
+    else if(lado == 2){
+        if(raiz->dir == NULL)
+            raiz->dir = criarNo(valor);
     }
 
-    if(lado == 'e' && raiz->esq == NULL){
-        raiz->esq = criarNo(valor);
-    }
-
-    else if(lado == 'd' && raiz->dir == NULL){
-        raiz->dir = criarNo(valor);
-    }
-    
     return raiz;
 }
+
 int main(){
 
     No *raiz = criarNo(10);
 
-    inserir(raiz, 5, 'e');
-    inserir(raiz, 20, 'd');
+    inserir(raiz, 5, 1);          //inserir a esquerda de 10
+    inserir(raiz, 20, 2);         //inserir a direita de 10
 
-    inserir(raiz->esq, 3, 'e');
-    inserir(raiz->esq, 8, 'd');
-    
+    inserir(raiz->esq, 3, 1);     //inserir a esquerda de 5
+    inserir(raiz->esq, 8, 2);     //inserir a direita de 5
+
+    imprimir(raiz);
+
     return 0;
 }
