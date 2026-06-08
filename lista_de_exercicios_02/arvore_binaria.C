@@ -41,6 +41,14 @@ No* inserir(No *raiz, int valor, int lado){
 
     return raiz;
 }
+//38 - Implemente o percurso em pré-ordem
+void preOrdem(No *raiz) {
+    if (raiz != NULL) {
+        printf("%d ", raiz->valor);
+        preOrdem(raiz->esq);
+        preOrdem(raiz->dir);
+    }
+}
 
 int main(){
 
