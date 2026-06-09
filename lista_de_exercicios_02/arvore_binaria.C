@@ -98,7 +98,18 @@ int calcularAltura(No* raiz){
     else{return alturaDir + 1;
     }
 }
-
+//43 - Implemente uma função que conte quantos nós folhas existem
+int contarFolhas(No *raiz){
+    if(raiz == NULL){
+        return 0;
+    }
+    // Se encontrar uma folha soma + 1 no contador
+    if(raiz->esq == NULL && raiz->dir == NULL){
+        return 1;
+    }
+    //Se o nó não for folha, continue buscando a folha.
+    return contarFolhas(raiz->esq) + contarFolhas(raiz->dir);
+}
 int main(){
 
     No *raiz = criarNo(10);
