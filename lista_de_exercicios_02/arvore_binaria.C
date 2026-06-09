@@ -83,6 +83,22 @@ int contarNos(No *raiz){
 
     return 1 + contarNos(raiz->esq) + contarNos(raiz->dir);
 }
+//42 - Implemente uma função que calcule a altura da árvore binária
+int calcularAltura(No* raiz){
+    if(raiz == NULL){
+        return -1;
+    }
+
+    //A cada recursão vai somando 1 no contador conforme for descendo na árvore, até encontrar a folha.
+    int alturaEsq = 1 + calcularAltura(raiz->esq);
+    int alturaDir = calcularAltura(raiz->dir);
+
+    if(alturaEsq > alturaDir){return alturaEsq + 1;
+    }
+    else{return alturaDir + 1;
+    }
+}
+
 int main(){
 
     No *raiz = criarNo(10);
