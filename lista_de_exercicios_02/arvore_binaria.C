@@ -110,6 +110,21 @@ int contarFolhas(No *raiz){
     //Se o nó não for folha, continue buscando a folha.
     return contarFolhas(raiz->esq) + contarFolhas(raiz->dir);
 }
+//44 - Crie uma função que espelhe uma árvore binária.
+void espelharArvore(No* raiz){
+    if(raiz == NULL) return;
+
+
+    //Para descer até a folha da esquerda como direita
+    espelharArvore(raiz->esq);
+    espelharArvore(raiz->dir);
+
+    //utiliza-se o Nó temp para não perder a referência durante o espelhamento.
+    No* temp = raiz->esq;
+    raiz->esq = raiz->dir;
+    raiz->dir = temp;
+
+}
 int main(){
 
     No *raiz = criarNo(10);
@@ -121,5 +136,11 @@ int main(){
     inserir(raiz->esq, 8, 2);     //inserir a direita de 5
 
     imprimir(raiz);
+
+    emOrdem(raiz);
+    preOrdem(raiz);
+    posOrdem(raiz);
+
+    pritf("%d", contarNos(raiz));
     return 0;
 }
