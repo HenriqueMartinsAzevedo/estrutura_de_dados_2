@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 //36 - implemente a estrutura de um nó de árvore binária.
 typedef struct No{
@@ -124,6 +125,21 @@ void espelharArvore(No* raiz){
     raiz->esq = raiz->dir;
     raiz->dir = temp;
 
+}
+//45 - Implemente uma função que verifica se duas árvores binárias são iguais.
+bool arvoresIguais(No* a, No* b){
+    //Se as árvores chegarem nao final juntas, elas são iguais.
+    if(a == NULL && b == NULL) return true;
+
+    //Se uma árvore chegar ao final antes da outra isso quer dizer que as estruturas são diferentes. 
+    else if(a == NULL || b == NULL) return false;
+
+    //Verifica se o valor atual é igual em ambas as árvore E continua a busca tanto na esquerda como na direita.
+    else if(a->valor == b->valor){
+        return arvoresIguais(a->esq,  b->esq) && arvoreIguais(a->dir, b->dir);
+    }
+    //Se os valores dos nós atuais forem diferente
+    return false;
 }
 int main(){
 
