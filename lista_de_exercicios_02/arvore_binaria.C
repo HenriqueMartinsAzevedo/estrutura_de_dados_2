@@ -91,7 +91,7 @@ int calcularAltura(No* raiz){
     }
 
     //A cada recursão vai somando 1 no contador conforme for descendo na árvore, até encontrar a folha.
-    int alturaEsq = 1 + calcularAltura(raiz->esq);
+    int alturaEsq = calcularAltura(raiz->esq);
     int alturaDir = calcularAltura(raiz->dir);
 
     if(alturaEsq > alturaDir){return alturaEsq + 1;
@@ -136,11 +136,12 @@ bool arvoresIguais(No* a, No* b){
 
     //Verifica se o valor atual é igual em ambas as árvore E continua a busca tanto na esquerda como na direita.
     else if(a->valor == b->valor){
-        return arvoresIguais(a->esq,  b->esq) && arvoreIguais(a->dir, b->dir);
+        return arvoresIguais(a->esq,  b->esq) && arvoresIguais(a->dir, b->dir);
     }
     //Se os valores dos nós atuais forem diferente
     return false;
 }
+
 int main(){
 
     No *raiz = criarNo(10);
@@ -157,6 +158,6 @@ int main(){
     preOrdem(raiz);
     posOrdem(raiz);
 
-    pritf("%d", contarNos(raiz));
+    printf("%d", contarNos(raiz));
     return 0;
 }
