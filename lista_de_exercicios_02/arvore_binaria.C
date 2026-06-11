@@ -142,22 +142,67 @@ bool arvoresIguais(No* a, No* b){
     return false;
 }
 
-int main(){
+int main() {
+    //Criando a primeira árvore (Árvore A)
+    No *raizA = criarNo(10);
+    inserir(raizA, 5, 1);          // Inserir à esquerda de 10
+    inserir(raizA, 20, 2);         // Inserir à direita de 10
 
-    No *raiz = criarNo(10);
+    inserir(raizA->esq, 3, 1);     // Inserir à esquerda de 5
+    inserir(raizA->esq, 8, 2);     // Inserir à direita de 5
+    
+    inserir(raizA->dir, 15, 1);    // Inserir à esquerda de 20
+    inserir(raizA->dir, 30, 2);    // Inserir à direita de 20
 
-    inserir(raiz, 5, 1);          //inserir a esquerda de 10
-    inserir(raiz, 20, 2);         //inserir a direita de 10
+    // 2. Testando os percursos
+    printf("--- Percursos da Arvore A ---\n");
+    printf("Pre-ordem: ");
+    preOrdem(raizA);
+    
+    printf("\nEm ordem: ");
+    emOrdem(raizA);
+    
+    printf("\nPos-ordem: ");
+    posOrdem(raizA);
+    printf("\n");
 
-    inserir(raiz->esq, 3, 1);     //inserir a esquerda de 5
-    inserir(raiz->esq, 8, 2);     //inserir a direita de 5
+    //contagens dos nós e altura
+    printf("\n--- Propriedades da Arvore A ---\n");
+    printf("Total de nos: %d\n", contarNos(raizA));
+    printf("Altura da arvore: %d\n", calcularAltura(raizA));
+    printf("Total de folhas: %d\n", contarFolhas(raizA));
 
-    imprimir(raiz);
+    //Criando uma segunda árvore (Árvore B) para testar igualdade
+    No *raizB = criarNo(10);
+    inserir(raizB, 5, 1);
+    inserir(raizB, 20, 2);
+    inserir(raizB->esq, 3, 1);
+    inserir(raizB->esq, 8, 2);
+    inserir(raizB->dir, 15, 1);
+    inserir(raizB->dir, 30, 2);
 
-    emOrdem(raiz);
-    preOrdem(raiz);
-    posOrdem(raiz);
+    //igualdade entre as árvores
+    printf("\n--- Teste de Igualdade ---\n");
+    if (arvoresIguais(raizA, raizB)) {
+        printf("Resultado: As arvores A e B sao IGUAIS.\n");
+    } else {
+        printf("Resultado: As arvores A e B sao DIFERENTES.\n");
+    }
 
-    printf("%d", contarNos(raiz));
+    //espelhamento das árvores
+    printf("\n--- Teste de Espelhamento ---\n");
+    printf("Espelhando a Arvore A...\n");
+    espelharArvore(raizA);
+    
+    printf("Pre-ordem da Arvore A apos espelhamento: ");
+    preOrdem(raizA);
+    printf("\n");
+
+    //Verificando a igualdade novamente após espelhar a Árvore A
+    if (arvoresIguais(raizA, raizB)) {
+        printf("Apos espelhar, as arvores A e B sao IGUAIS.\n");
+    } else {
+        printf("Apos espelhar, as arvores A e B sao DIFERENTES.\n");
+    }
     return 0;
 }
