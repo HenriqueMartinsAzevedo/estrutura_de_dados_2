@@ -45,7 +45,7 @@ No* inserir(No* raiz, int valor){
 //11 - Implemente a função de busca em uma ABB.
 No* buscar(No* raiz, int valor){
     if(raiz == NULL || raiz == raiz->valor) return raiz;
-    
+
     //Caso  valor for menor que a raiz, retorna o nó esquerda.
     if(valor < raiz->valor){
         return buscar(raiz->esq, valor);
@@ -53,6 +53,12 @@ No* buscar(No* raiz, int valor){
 
     //caso valor for maior que a raiz, retorna o nó da direita
     return buscar(raiz->dir, valor);
+}
+//12 - Implemente o percurso em ordem em uma ABB.
+void emOrdem(No* raiz){
+    emOrdem(raiz->esq);
+    printf("%d", raiz->valor);
+    emOrdem(raiz->dir);
 }
 int main(){
     return 0;
