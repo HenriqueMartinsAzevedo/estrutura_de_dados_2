@@ -42,6 +42,18 @@ No* inserir(No* raiz, int valor){
 
     return raiz;
 }
+//11 - Implemente a função de busca em uma ABB.
+No* buscar(No* raiz, int valor){
+    if(raiz == NULL || raiz == raiz->valor) return raiz;
+    
+    //Caso  valor for menor que a raiz, retorna o nó esquerda.
+    if(valor < raiz->valor){
+        return buscar(raiz->esq, valor);
+    }
+
+    //caso valor for maior que a raiz, retorna o nó da direita
+    return buscar(raiz->dir, valor);
+}
 int main(){
     return 0;
 }
