@@ -10,3 +10,38 @@
 //7 - Remoção do nó com dois filhos: Já neste caso, podemos seguir a regra do sucessor que o nó a ser removido, vai ser substituído pelo nó de menor valor da subárvore da direita, ou podemos seguir a regra do predecessor que é o nó de maior valor da subárvore da esquerda.
 //8 - A principal vantagem é que a ABB possui regra de ordenação as dos valores menores que a raíz ficam a esquerda e valores maiores que a raíz ficada na direiita, consequentemente o processo de busca mais rápido.
 //9 - O problema do desbalanceamento em ABB é que o tempo de busca será maior, por exemplo se o valor procurado for uma folha de 1000 nós a complexidade cai para O(n), já na ABB balanceada a complexidade é de O(log n) que é mais rápido.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+//10 -  Implemente a função de inserção em uma ABB usando recursão.
+typedef struct No{
+    int valor;
+    struct No *esq;
+    struct No *dir;
+} No;
+
+No* criarNo(int valor){
+    No *novo = (No*) malloc(sizeof(No));
+
+    novo->valor = valor;
+    novo->esq = NULL;
+    novo->dir = NULL;
+}
+
+No* inserir(No* raiz, int valor){
+    if(raiz == NULL) return criarNo(valor);
+
+    if(valor < raiz->valor){
+        raiz->esq  = inserir(raiz->esq, valor);
+    } 
+
+    if(valor > raiz->valor){
+        raiz->dir = inserir(raiz->dir, valor);
+    }
+
+    return raiz;
+}
+int main(){
+    return 0;
+}
