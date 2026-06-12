@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 //10 -  Implemente a função de inserção em uma ABB usando recursão.
 typedef struct No{
@@ -175,6 +176,14 @@ No* maiorValor(No* raiz){
     //Continua descendo para os nós a direita.
     return menorValor(raiz->dir);
 }
+// 17 -  Crie uma função que verifique se uma árvore é realmente uma ABB válida.
+int BSTvalida(No* raiz, int min, int max){
+    if(raiz == NULL) return 1;
+
+    if(raiz->valor <=min || raiz->valor >= max) return 0;
+    BSTValida(raiz->esq, min, raiz->valor) && BSTValida(raiz->dir, raiz->valor, max);
+}
+
 int main(){
     return 0;
 }
