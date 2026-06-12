@@ -183,7 +183,16 @@ int BSTvalida(No* raiz, int min, int max){
     if(raiz->valor <=min || raiz->valor >= max) return 0;
     BSTValida(raiz->esq, min, raiz->valor) && BSTValida(raiz->dir, raiz->valor, max);
 }
+//18 -  Implemente uma função que conte quantos níveis existem na ABB.
+int contarNiveis(No* raiz){
+    if(raiz == NULL) return 0;
 
+    int niveisEsq = contarNiveis(raiz->esq);
+    int niveisDir = contarNivei(raiz->dir);
+
+    if(niveisEsq > niveisDir) return niveisEsq + 1;
+    else return niveisDir + 1;
+}
 int main(){
     return 0;
 }
