@@ -10,7 +10,7 @@
 //7 - Remoção do nó com dois filhos: Já neste caso, podemos seguir a regra do sucessor que o nó a ser removido, vai ser substituído pelo nó de menor valor da subárvore da direita, ou podemos seguir a regra do predecessor que é o nó de maior valor da subárvore da esquerda.
 //8 - A principal vantagem é que a ABB possui regra de ordenação as dos valores menores que a raíz ficam a esquerda e valores maiores que a raíz ficada na direiita, consequentemente o processo de busca mais rápido.
 //9 - O problema do desbalanceamento em ABB é que o tempo de busca será maior, por exemplo se o valor procurado for uma folha de 1000 nós a complexidade cai para O(n), já na ABB balanceada a complexidade é de O(log n) que é mais rápido.
-
+//24 - AVL é uma árvore onde os nós seguem a regra de que a diferença entre as subárvores da esquerda e da direita é de apenas um nó não pode ser maior que isso. Já na árvore rubro-negra, cada nó recebe uma cor entre preto e vermelho, a raiz sempre é preta e os nós vermelhos não podem ter filhos vermelhos. Já a B-TREE é uma árvore que permite armazenar várias chaves por nó.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
