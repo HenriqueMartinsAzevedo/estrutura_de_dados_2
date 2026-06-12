@@ -44,7 +44,7 @@ No* inserir(No* raiz, int valor){
 }
 //11 - Implemente a função de busca em uma ABB.
 No* buscar(No* raiz, int valor){
-    if(raiz == NULL || raiz == raiz->valor) return raiz;
+    if(raiz == NULL || raiz->valor == raiz) return raiz;
 
     //Caso  valor for menor que a raiz, retorna o nó esquerda.
     if(valor < raiz->valor){
@@ -117,6 +117,40 @@ No* removerUmFilho(No* raiz, int valor){
     }
    }
    return raiz;
+}
+//15 - Implemente a remoção de um nó com dois filhos utilizando sucessor em ordem.
+//Função auxiliar para encontrar valor minímo da direita.
+No* encontrarMinimo(No* atual){
+
+    while(atual != NULL && atual->esq != NULL){
+        atual = atual->esq;
+    }
+    return atual;
+}
+
+No* removerDoisFilhos(No* raiz, int valor){
+    if (raiz == NULL) return NULL;
+
+    //Buscando nó, verificando se está a esquerda ou na direita.
+    if(valor < raiz->valor){
+        raiz->esq = removerDoisFilhos(raiz->esq, valor);
+    }
+    else if(valor > raiz->valor){
+        raiz->dir = removerDoisFilhos(raiz->dir, valor);
+    }
+    else{
+        if (raiz->esq != NULL && raiz->dir != NULL){
+        //Passando o nó a direita da chave de busca
+        No* temp = encontrarMinimo(raiz->dir);
+
+        //a raiz recebe o menor valor da subárvore da direita.
+        raiz->valor = temp->valor;
+    
+        //Agora a função deleta o nó menor da subárvore que está duplicado.
+        raiz->dir = removerUmFilho(raiz->dir, temp->valor);
+    }
+    }
+    return raiz;
 }
 int main(){
     return 0;
