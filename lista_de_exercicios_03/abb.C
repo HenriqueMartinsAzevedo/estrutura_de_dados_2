@@ -152,6 +152,29 @@ No* removerDoisFilhos(No* raiz, int valor){
     }
     return raiz;
 }
+
+//16 -  Implemente uma função que encontre: Maior valor e menor valor
+No* menorValor(No* raiz){
+    //caso a árvore esteja vazia.
+    if(raiz == NULL) return NULL;
+
+    //caso chegue em uma folha na subárvore a esquerda.
+    if(raiz->esq == NULL) return raiz;
+
+    //Continua descendo para os nós a esquerda.
+    return menorValor(raiz->esq);
+}
+
+No* maiorValor(No* raiz){
+    //caso a árvore esteja vazia.
+    if(raiz == NULL) return NULL;
+
+    //caso chegue em uma folha na subárvore a direita.
+    if(raiz->dir == NULL) return raiz;
+
+    //Continua descendo para os nós a direita.
+    return menorValor(raiz->dir);
+}
 int main(){
     return 0;
 }
