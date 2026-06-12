@@ -28,6 +28,8 @@ No* criarNo(int valor){
     novo->valor = valor;
     novo->esq = NULL;
     novo->dir = NULL;
+
+    return novo;
 }
 
 No* inserir(No* raiz, int valor){
@@ -45,7 +47,7 @@ No* inserir(No* raiz, int valor){
 }
 //11 - Implemente a função de busca em uma ABB.
 No* buscar(No* raiz, int valor){
-    if(raiz == NULL || raiz->valor == raiz) return raiz;
+    if(raiz == NULL || raiz->valor == valor) return raiz;
 
     //Caso  valor for menor que a raiz, retorna o nó esquerda.
     if(valor < raiz->valor){
@@ -153,6 +155,21 @@ No* removerDoisFilhos(No* raiz, int valor){
     }
     return raiz;
 }
+//Função auxiliar para o int main.
+No* remover(No* raiz, int valor){
+    No* no = buscar(raiz, valor);
+
+    if(no == NULL)
+        return raiz;
+
+    if(no->esq == NULL && no->dir == NULL)
+        return removerFolha(raiz, valor);
+
+    if(no->esq == NULL || no->dir == NULL)
+        return removerUmFilho(raiz, valor);
+
+    return removerDoisFilhos(raiz, valor);
+}
 
 //16 -  Implemente uma função que encontre: Maior valor e menor valor
 No* menorValor(No* raiz){
@@ -174,25 +191,91 @@ No* maiorValor(No* raiz){
     if(raiz->dir == NULL) return raiz;
 
     //Continua descendo para os nós a direita.
-    return menorValor(raiz->dir);
+    return maiorValor(raiz->dir);
 }
 // 17 -  Crie uma função que verifique se uma árvore é realmente uma ABB válida.
 int BSTvalida(No* raiz, int min, int max){
     if(raiz == NULL) return 1;
 
     if(raiz->valor <=min || raiz->valor >= max) return 0;
-    BSTValida(raiz->esq, min, raiz->valor) && BSTValida(raiz->dir, raiz->valor, max);
+    return BSTvalida(raiz->esq, min, raiz->valor) && BSTvalida(raiz->dir, raiz->valor, max);
 }
 //18 -  Implemente uma função que conte quantos níveis existem na ABB.
 int contarNiveis(No* raiz){
     if(raiz == NULL) return 0;
 
     int niveisEsq = contarNiveis(raiz->esq);
-    int niveisDir = contarNivei(raiz->dir);
+    int niveisDir = contarNiveis(raiz->dir);
 
     if(niveisEsq > niveisDir) return niveisEsq + 1;
     else return niveisDir + 1;
 }
+// 19 - Crie um menu completo de ABB contendo 
 int main(){
+    No* raiz = NULL;
+
+    int opcao;
+    int valor;
+
+    do{
+        printf("\n===== MENU ABB =====\n");
+        printf("1 - Inserir\n");
+        printf("2 - Buscar\n");
+        printf("3 - Remover\n");
+        printf("4 - Imprimir em ordem\n");
+        printf("5 - Mostrar altura\n");
+        printf("0 - Encerrar\n");
+        printf("Opcao: ");
+        scanf("%d", &opcao);
+
+        switch(opcao){
+
+            case 1:
+                printf("Valor para inserir: ");
+                scanf("%d", &valor);
+
+                raiz = inserir(raiz, valor);
+                break;
+
+            case 2:
+                printf("Valor para buscar: ");
+                scanf("%d", &valor);
+
+                if(buscar(raiz, valor))
+                    printf("Valor encontrado!\n");
+                else
+                    printf("Valor nao encontrado!\n");
+
+                break;
+
+            case 3:
+                printf("Valor para remover: ");
+                scanf("%d", &valor);
+
+                raiz = remover(raiz, valor);
+                printf("Remocao concluida.\n");
+
+                break;
+
+            case 4:
+                printf("ABB em ordem: ");
+                emOrdem(raiz);
+                printf("\n");
+                break;
+
+            case 5:
+                printf("Altura da ABB: %d\n", contarNiveis(raiz) - 1);
+                break;
+
+            case 0:
+                printf("Encerrando...\n");
+                break;
+
+            default:
+                printf("Opcao invalida!\n");
+        }
+
+    }while(opcao != 0);
+
     return 0;
 }
