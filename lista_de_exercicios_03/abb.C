@@ -60,6 +60,33 @@ void emOrdem(No* raiz){
     printf("%d", raiz->valor);
     emOrdem(raiz->dir);
 }
+//13 - Implemente a remoção de um nó folha em uma ABB.
+No* removerFolha(No* raiz, int valor){
+   if(raiz == NULL) return NULL;
+
+   //se o valor procurado for menor que raiz, ele vai ser procurado na subárvore a esquerda
+   if(valor < raiz->valor){
+    raiz->esq = removerFolha(raiz->esq, valor);
+   }
+
+    //se o valor procurado for maior que raiz, ele vai ser procurado na subárvore a direita
+   else if(valor > raiz->valor){
+    raiz->dir = removerFolha(raiz->dir, valor);
+   }
+
+   //Quando o valor for encontrado é verificado se é uma folha
+   else{
+    if(raiz->esq == NULL && raiz->dir == NULL){
+        free(raiz); //Libera a memória alocada para o nó
+        return NULL;
+    }
+    else{
+        //Caso não seja uma folha retorna apenas a raiz.
+        return raiz;
+    }
+   }
+   return raiz;
+}
 int main(){
     return 0;
 }
