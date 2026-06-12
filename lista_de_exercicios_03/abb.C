@@ -87,6 +87,37 @@ No* removerFolha(No* raiz, int valor){
    }
    return raiz;
 }
+//14 - Implemente a remoção de um nó com apenas um filho.
+No* removerUmFilho(No* raiz, int valor){
+    if(raiz == NULL) return NULL;
+
+    //se o valor procurado for menor que raiz, ele vai ser procurado na subárvore a esquerda
+   if(valor < raiz->valor){
+    raiz->esq = removerUmFilho(raiz->esq, valor);
+   }
+
+    //se o valor procurado for maior que raiz, ele vai ser procurado na subárvore a direita
+   else if(valor > raiz->valor){
+    raiz->dir = removerUmFilho(raiz->dir, valor);
+   }
+
+   //Se o nó for encontrado
+   else{
+    //caso o nó possua filha só a direita.
+    if(raiz->esq == NULL){
+        No* temp = raiz->dir; //Para não perder a referência do nó filho que irá substituir o pai.
+        free(raiz); //Libera memória do nó a ser removido
+        return temp; //retorna o filho para conectar ao espaço vazio do nó removido.
+    }
+    //caso o nó possua apenas filho a esquerda
+    else if(raiz->dir == NULL){
+        No* temp = raiz->esq; //Para não perder a referência do nó filho que irá substituir o pai. 
+        free(raiz); //Libera memória do nó a ser removido
+        return temp; //retorna o filho para conectar ao espaço vazio do nó removido. 
+    }
+   }
+   return raiz;
+}
 int main(){
     return 0;
 }
