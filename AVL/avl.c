@@ -7,16 +7,24 @@ typedef struct No{
     int valor;
     struct No *esq;
     struct No *dir;
+    short altura;
 } No;
 
 No* criarNo(int valor){
     No *novo = (No*) malloc(sizeof(No));
 
+    if(novo == NULL){
+        printf("Erro de alocação de memória");
+        return NULL;
+    }
     novo->valor = valor;
     novo->esq = NULL;
     novo->dir = NULL;
-
-    return novo;
+    novo->altura = 0;
+    
+    // na linha abaixo está retornando o endereço de memória.
+    //nesse endereço contém, o valor, nó filho esq e dir, e a altura
+    return novo; 
 }
 
 No* inserir(No* raiz, int valor){
@@ -46,6 +54,8 @@ No* buscar(No* raiz, int valor){
 }
 //12 - Implemente o percurso em ordem em uma ABB.
 void emOrdem(No* raiz){
+    if(raiz == NULL) return;
+
     emOrdem(raiz->esq);
     printf("%d", raiz->valor);
     emOrdem(raiz->dir);
