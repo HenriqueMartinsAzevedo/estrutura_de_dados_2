@@ -145,7 +145,6 @@ int main() {
     emOrdem(raiz);
     printf("\n");
     
-    liberarArvore(raiz);
     
     printf("Antes:\n");
     emOrdem(raiz);
@@ -159,5 +158,7 @@ int main() {
     printf("A arvore esta balanceada.\n");}
     else{
     printf("A arvore nao esta balanceada.\n");}
+
+    liberarArvore(raiz);
     return 0;
 }

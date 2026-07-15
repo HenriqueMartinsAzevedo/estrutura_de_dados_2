@@ -80,9 +80,64 @@ No* buscar(No *raiz, int valor) {
     if (valor < raiz->valor) {
         return buscar(raiz->esq, valor);
     }
-
-    return buscar(raiz->dir, valor);
+    else{
+        return buscar(raiz->dir, valor);
+    }
+    
 }
+//Remoção
+No* remover(No *raiz, int valor) {
+    No *temp = NULL;
+    // árvore vazia
+    if (raiz == NULL) {
+        return NULL;
+    }
+
+    // busca do nó
+    if (valor < raiz->valor) {
+        raiz->esq = remover(raiz->esq, valor);
+    }
+
+    else if (valor > raiz->valor) {
+        raiz->dir = remover(raiz->dir, valor);
+    }
+
+    // encontrou o nó
+    else {
+        
+        // CASO 1 - sem filhos
+        if (raiz->esq == NULL && raiz->dir == NULL) {
+
+            free(raiz);
+
+            return NULL;
+        }
+
+        // CASO 2 - um filho à direita
+        else if (raiz->esq == NULL) {
+
+            temp = raiz->dir;
+
+            free(raiz);
+
+            return temp;
+        }
+
+        // CASO 2 - um filho à esquerda
+        else if (raiz->dir == NULL) {
+
+            temp = raiz->esq;
+
+            free(raiz);
+
+            return temp;
+        }
+    raiz->dir = temp;
+    //raiz->valor = temp->valor;
+    return raiz;
+}
+}
+
 int main() {
 
     No *raiz = NULL;
@@ -94,6 +149,9 @@ int main() {
     raiz = inserir(raiz, 40);
     raiz = inserir(raiz, 60);
     raiz = inserir(raiz, 80);
+    raiz = inserir(raiz, 90);
+    raiz = inserir(raiz, 35);
+    raiz = inserir(raiz, 25);
     
     printf("Percurso em ordem:\n");
     emOrdem(raiz);
@@ -105,6 +163,29 @@ int main() {
 
     printf("Percurso em Pós-ordem:\n");
     posOrdem(raiz);
+
+
+    int valor;
+
+    printf("\n\nDigite um valor para buscar: ");
+    scanf("%d", &valor);
+
+    No *resultado = buscar(raiz, valor);
+
+    if (resultado != NULL) {
+        printf("Valor encontrado!\n");
+    }
+    else {
+        printf("Valor nao encontrado!\n");
+    }
+
+    printf("Antes de remover elementos:\n");
+    emOrdem(raiz);
+
+    raiz = remover(raiz, 80);
+
+    printf("\n\nDepois de remover elemento:\n");
+    emOrdem(raiz);
 
     return 0;
 }
