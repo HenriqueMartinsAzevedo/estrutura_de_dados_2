@@ -28,3 +28,12 @@ No* criarNo(int valor){
 int maior(int a, int b){
     return (a > b) ? a : b;
 }
+
+//Esta função Retorna a altura do nó
+int alturaDoNo(No *no){
+    if(no == NULL) 
+        return - 1;
+
+    else 
+        return no->altura;
+}
