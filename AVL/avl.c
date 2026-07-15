@@ -37,3 +37,13 @@ int alturaDoNo(No *no){
     else 
         return no->altura;
 }
+
+//Calcula e retorna o fator de balanceamento
+int fb(No *no){
+    if(no != NULL){
+        return (alturaDoNo(no->esq) - alturaDoNo(no->dir));
+    }
+
+    else
+        return 0;
+}
