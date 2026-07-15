@@ -23,3 +23,8 @@ No* criarNo(int valor){
     return novo;
 }
 
+// Compara as alturas da subárvore esquerda e da subárvore direita.
+// Retorna a maior altura entre elas.
+int maior(int a, int b){
+    return (a > b) ? a : b;
+}
