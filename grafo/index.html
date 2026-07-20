@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>grafo:// bfs · dfs · multigrafo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0D14;
+    --panel: #11151F;
+    --panel-2: #161B28;
+    --border: #232B3D;
+    --border-soft: #1B2130;
+    --text: #E8EBF3;
+    --muted: #7C87A0;
+    --muted-2: #4E5872;
+    --bfs: #45D9C9;
+    --bfs-dim: rgba(69,217,201,0.14);
+    --dfs: #F2A65A;
+    --dfs-dim: rgba(242,166,90,0.14);
+    --path: #FF5D73;
+    --node-fill: #1A2030;
+    --node-border: #333D56;
+    --edge: #2B3348;
+    --danger: #E24C4B;
+    --danger-dim: rgba(226,76,75,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;}
+  body{display:flex;flex-direction:column;min-height:100vh;}
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 24px;border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, var(--panel), var(--bg));
+    flex-wrap:wrap;gap:12px;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--bfs);box-shadow:0 0 10px var(--bfs);}
+  .brand h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;letter-spacing:0.5px;margin:0;color:var(--text);
+  }
+  .brand span.slash{color:var(--muted-2);}
+  .brand small{color:var(--muted);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-left:4px;}
+
+  .algo-switch{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .algo-switch button{
+    background:var(--panel);color:var(--muted);border:none;padding:9px 18px;font-family:'JetBrains Mono';
+    font-weight:600;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .15s ease;
+  }
+  .algo-switch button.active[data-algo="bfs"]{background:var(--bfs-dim);color:var(--bfs);}
+  .algo-switch button.active[data-algo="dfs"]{background:var(--dfs-dim);color:var(--dfs);}
+  .algo-switch button:not(.active):hover{color:var(--text);}
+
+  main{
+    flex:1;display:grid;grid-template-columns:270px 1fr 310px;gap:1px;background:var(--border);
+    min-height:0;
+  }
+  @media (max-width: 980px){
+    main{grid-template-columns:1fr;}
+  }
+
+  .panel{background:var(--panel);padding:18px;overflow-y:auto;}
+  .panel h2{
+    font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--muted);margin:0 0 12px 0;font-weight:600;
+  }
+  .panel h2.spaced{margin-top:24px;}
+
+  /* ---- LEFT: controls ---- */
+  .mode-grid{display:flex;flex-direction:column;gap:6px;}
+  .mode-btn{
+    display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--border-soft);
+    color:var(--text);padding:10px 12px;border-radius:8px;cursor:pointer;font-family:'JetBrains Mono';
+    font-size:12.5px;text-align:left;transition:all .15s ease;
+  }
+  .mode-btn .icon{width:16px;text-align:center;color:var(--muted);}
+  .mode-btn:hover{border-color:var(--muted-2);}
+  .mode-btn.active{background:rgba(69,217,201,0.10);border-color:var(--bfs);}
+  .mode-btn.active .icon{color:var(--bfs);}
+  .mode-btn.remove-mode.active{background:var(--danger-dim);border-color:var(--danger);}
+  .mode-btn.remove-mode.active .icon{color:var(--danger);}
+
+  .hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px;padding:10px;background:var(--panel-2);border-radius:8px;border:1px solid var(--border-soft);}
+
+  select{
+    width:100%;background:var(--panel-2);color:var(--text);border:1px solid var(--border-soft);
+    border-radius:8px;padding:9px 10px;font-family:'JetBrains Mono';font-size:12.5px;margin-bottom:8px;
+  }
+  label.small{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:0.4px;}
+
+  .run-btn{
+    width:100%;padding:11px;border-radius:8px;border:none;font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:13px;letter-spacing:0.4px;cursor:pointer;margin-top:6px;transition:filter .15s ease;
+  }
+  .run-btn:hover{filter:brightness(1.12);}
+  .run-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .run-btn.bfs{background:var(--bfs);color:#04211D;}
+  .run-btn.dfs{background:var(--dfs);color:#2B1600;}
+
+  .ghost-btn{
+    width:100%;padding:9px;border-radius:8px;background:transparent;border:1px solid var(--border-soft);
+    color:var(--muted);font-family:'JetBrains Mono';font-size:11.5px;cursor:pointer;margin-top:8px;transition:all .15s ease;
+  }
+  .ghost-btn:hover{border-color:var(--muted-2);color:var(--text);}
+  .ghost-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+
+  .multigraph-tag{
+    display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--bfs);
+    background:var(--bfs-dim);border:1px solid var(--bfs);padding:4px 9px;border-radius:20px;margin-top:10px;
+  }
+
+  /* ---- CENTER: canvas ---- */
+  .canvas-wrap{background:var(--bg);position:relative;display:flex;flex-direction:column;min-height:460px;}
+  .canvas-status{
+    position:absolute;top:12px;left:14px;font-size:11px;color:var(--muted);
+    background:rgba(17,21,31,0.85);border:1px solid var(--border-soft);padding:6px 10px;border-radius:6px;
+    z-index:2;pointer-events:none;max-width:75%;
+  }
+  .canvas-status strong{color:var(--text);}
+  svg#graphSvg{flex:1;width:100%;height:100%;display:block;cursor:crosshair;}
+  svg#graphSvg.mode-move{cursor:grab;}
+  svg#graphSvg.mode-remove{cursor:not-allowed;}
+
+  .node circle{fill:var(--node-fill);stroke:var(--node-border);stroke-width:2;transition:fill .25s ease, stroke .25s ease;}
+  .node text.node-id{fill:var(--text);font-family:'JetBrains Mono';font-weight:700;font-size:11.5px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+  .node text.node-caption{
+    fill:var(--muted);font-family:'JetBrains Mono';font-weight:500;font-size:10px;text-anchor:middle;
+    pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round;
+  }
+  .node{cursor:pointer;}
+  .node.origin circle{stroke:var(--bfs);stroke-width:3;}
+  .node.dest circle{stroke:var(--dfs);stroke-width:3;}
+  .node.selected circle{stroke:#FFFFFF;stroke-width:3;}
+  .node.visited-bfs circle{fill:var(--bfs-dim);stroke:var(--bfs);}
+  .node.visited-dfs circle{fill:var(--dfs-dim);stroke:var(--dfs);}
+  .node.current circle{stroke:#FFFFFF;stroke-width:3;filter:drop-shadow(0 0 8px rgba(255,255,255,0.6));}
+  .node.on-path circle{fill:rgba(255,93,115,0.18);stroke:var(--path);stroke-width:3;}
+
+  path.edge{fill:none;stroke:var(--edge);stroke-width:2.5;pointer-events:none;transition:stroke .25s ease, stroke-width .25s ease;}
+  path.edge.used-bfs{stroke:var(--bfs);}
+  path.edge.used-dfs{stroke:var(--dfs);}
+  path.edge.on-path{stroke:var(--path);stroke-width:4;}
+  path.edge-hit{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke;cursor:pointer;}
+  text.edge-label{
+    fill:var(--muted);font-family:'JetBrains Mono';font-weight:600;font-size:10.5px;text-anchor:middle;
+    pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round;
+  }
+
+  /* ---- RIGHT: state ---- */
+  .pseudo{
+    background:var(--panel-2);border:1px solid var(--border-soft);border-radius:8px;padding:12px;
+    font-size:11.5px;line-height:1.9;color:var(--muted-2);white-space:pre;overflow-x:auto;
+  }
+  .pseudo .ln{display:block;padding:1px 6px;border-radius:4px;transition:all .15s ease;}
+  .pseudo .ln.active{background:var(--bfs-dim);color:var(--bfs);}
+  body.dfs-active .pseudo .ln.active{background:var(--dfs-dim);color:var(--dfs);}
+
+  .structure-row{display:flex;gap:6px;flex-wrap:wrap;min-height:38px;align-items:center;margin-bottom:4px;}
+  .struct-box{
+    background:var(--panel-2);border:1px solid var(--bfs);color:var(--bfs);
+    padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;
+  }
+  body.dfs-active .struct-box{border-color:var(--dfs);color:var(--dfs);}
+  .struct-label{font-size:10px;color:var(--muted);margin-bottom:6px;letter-spacing:0.5px;}
+
+  .log-feed{
+    display:flex;flex-direction:column-reverse;gap:5px;max-height:180px;overflow-y:auto;
+    font-size:11px;color:var(--muted);border-top:1px solid var(--border-soft);padding-top:10px;margin-top:4px;
+  }
+  .log-feed .entry{padding:5px 8px;background:var(--panel-2);border-radius:6px;border-left:2px solid var(--border-soft);}
+  .log-feed .entry.found{border-left-color:var(--path);color:var(--path);}
+  .log-feed .entry.visit{border-left-color:var(--bfs);}
+  body.dfs-active .log-feed .entry.visit{border-left-color:var(--dfs);}
+
+  .path-result{
+    margin-top:10px;padding:10px;border-radius:8px;background:rgba(255,93,115,0.08);
+    border:1px solid var(--path);color:var(--path);font-size:12px;display:none;line-height:1.6;
+  }
+  .path-result.show{display:block;}
+
+  .legend{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted);margin-top:10px;}
+  .legend .item{display:flex;align-items:center;gap:8px;}
+  .legend .swatch{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+  .legend .swatch.line{border-radius:0;height:2px;width:14px;background:var(--muted-2);}
+
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="dot" id="brandDot"></span>
+    <h1>grafo<span class="slash">://</span>busca</h1>
+    <small>bfs &amp; dfs · multigrafo de cidades</small>
+  </div>
+  <div class="algo-switch">
+    <button data-algo="bfs" class="active">BFS · LARGURA</button>
+    <button data-algo="dfs">DFS · PROFUNDIDADE</button>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT PANEL -->
+  <div class="panel">
+    <h2>Ferramenta</h2>
+    <div class="mode-grid">
+      <button class="mode-btn active" data-mode="move"><span class="icon">✥</span> Mover vértice</button>
+      <button class="mode-btn" data-mode="vertex"><span class="icon">●</span> Inserir vértice</button>
+      <button class="mode-btn" data-mode="edge"><span class="icon">─</span> Ligar com aresta</button>
+      <button class="mode-btn remove-mode" data-mode="remove"><span class="icon">✕</span> Remover</button>
+    </div>
+    <div class="hint" id="modeHint">Arraste um vértice existente para reposicioná-lo no grafo.</div>
+    <div class="multigraph-tag">⟲ multigrafo: pares podem ter várias ligações</div>
+
+    <h2 class="spaced">Origem &amp; Destino</h2>
+    <label class="small">Vértice de origem</label>
+    <select id="originSelect"><option value="">—</option></select>
+    <label class="small">Vértice de destino</label>
+    <select id="destSelect"><option value="">—</option></select>
+
+    <label class="small">Velocidade da animação</label>
+    <select id="speedSelect">
+      <option value="850">Lenta</option>
+      <option value="450" selected>Normal</option>
+      <option value="150">Rápida</option>
+    </select>
+
+    <button class="run-btn bfs" id="runBtn">▶ Buscar caminho</button>
+    <button class="ghost-btn" id="clearRunBtn">Limpar execução</button>
+    <button class="ghost-btn danger" id="clearGraphBtn">Apagar grafo inteiro</button>
+  </div>
+
+  <!-- CENTER CANVAS -->
+  <div class="canvas-wrap">
+    <div class="canvas-status" id="canvasStatus">Clique em uma área vazia para adicionar um vértice.</div>
+    <svg id="graphSvg" viewBox="0 0 1000 620" class="mode-move">
+      <defs>
+        <pattern id="dotgrid" width="26" height="26" patternUnits="userSpaceOnUse">
+          <circle cx="1.3" cy="1.3" r="1.3" fill="#1A2030"></circle>
+        </pattern>
+      </defs>
+      <rect id="bgRect" x="0" y="0" width="1000" height="620" fill="url(#dotgrid)"></rect>
+      <g id="edgesLayer"></g>
+      <g id="nodesLayer"></g>
+    </svg>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel">
+    <h2 id="pseudoTitle">Pseudocódigo · BFS</h2>
+    <div class="pseudo" id="pseudoBox"></div>
+
+    <h2 class="spaced" id="structTitle">Fila (FIFO)</h2>
+    <div class="struct-label">Estado atual da estrutura</div>
+    <div class="structure-row" id="structureRow"><span style="color:var(--muted-2);font-size:11px;">vazia</span></div>
+
+    <div class="path-result" id="pathResult"></div>
+
+    <h2 class="spaced">Registro de execução</h2>
+    <div class="log-feed" id="logFeed"></div>
+
+    <h2 class="spaced">Legenda</h2>
+    <div class="legend">
+      <div class="item"><span class="swatch" style="background:var(--node-fill);border:1px solid var(--node-border);"></span> não visitado</div>
+      <div class="item"><span class="swatch" style="background:var(--bfs);"></span> visitado (BFS)</div>
+      <div class="item"><span class="swatch" style="background:var(--dfs);"></span> visitado (DFS)</div>
+      <div class="item"><span class="swatch" style="background:var(--path);"></span> caminho final</div>
+      <div class="item"><span class="swatch line"></span> curvas paralelas = ligações múltiplas</div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  const SVGNS = "http://www.w3.org/2000/svg";
+
+  // ---------------- STATE ----------------
+  const state = {
+    nodes: [],        // {id, label, x, y}
+    edges: [],        // {id, a, b, label}
+    mode: "move",
+    algo: "bfs",
+    edgeSelection: null,
+    origin: null,
+    dest: null,
+    running: false,
+    vertexCounter: 0,
+    edgeCounter: 0,
+    dragging: null,
+  };
+
+  const svg = document.getElementById("graphSvg");
+  const nodesLayer = document.getElementById("nodesLayer");
+  const edgesLayer = document.getElementById("edgesLayer");
+  const canvasStatus = document.getElementById("canvasStatus");
+  const modeHint = document.getElementById("modeHint");
+  const originSelect = document.getElementById("originSelect");
+  const destSelect = document.getElementById("destSelect");
+  const speedSelect = document.getElementById("speedSelect");
+  const runBtn = document.getElementById("runBtn");
+  const pseudoBox = document.getElementById("pseudoBox");
+  const pseudoTitle = document.getElementById("pseudoTitle");
+  const structTitle = document.getElementById("structTitle");
+  const structureRow = document.getElementById("structureRow");
+  const logFeed = document.getElementById("logFeed");
+  const pathResult = document.getElementById("pathResult");
+
+  const PSEUDO = {
+    bfs: [
+      "fila ← [origem]",
+      "visitados ← { origem }",
+      "enquanto fila não vazia:",
+      "  atual ← fila.remove(0)",
+      "  se atual == destino: retorna caminho",
+      "  para cada ligação de atual:",
+      "    se vizinho não visitado:",
+      "      marca visitado, guarda ligação usada",
+      "      fila.inserir(vizinho)"
+    ],
+    dfs: [
+      "pilha ← [origem]",
+      "visitados ← { }",
+      "enquanto pilha não vazia:",
+      "  atual ← pilha.remove(topo)",
+      "  se atual não visitado:",
+      "    marca visitado",
+      "    se atual == destino: retorna caminho",
+      "    para cada ligação de atual:",
+      "      se não visitado: pilha.inserir(vizinho)"
+    ]
+  };
+
+  function renderPseudo(){
+    const lines = PSEUDO[state.algo];
+    pseudoBox.innerHTML = lines.map((l,i)=>`<span class="ln" data-i="${i+1}">${escapeHtml(l)}</span>`).join("\n");
+  }
+  function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function setActiveLine(n){
+    pseudoBox.querySelectorAll(".ln").forEach(el=>{
+      el.classList.toggle("active", Number(el.dataset.i) === n);
+    });
+  }
+
+  // ---------------- GEOMETRY ----------------
+  function svgPoint(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    const ctm = svg.getScreenCTM().inverse();
+    const p = pt.matrixTransform(ctm);
+    return { x: Math.max(40, Math.min(960, p.x)), y: Math.max(40, Math.min(580, p.y)) };
+  }
+  function tooClose(x,y){
+    return state.nodes.some(n => Math.hypot(n.x-x, n.y-y) < 50);
+  }
+  function quadAt(p0,c,p2,t){
+    const x = (1-t)*(1-t)*p0.x + 2*(1-t)*t*c.x + t*t*p2.x;
+    const y = (1-t)*(1-t)*p0.y + 2*(1-t)*t*c.y + t*t*p2.y;
+    return {x,y};
+  }
+  function shortText(label){
+    const s = String(label).trim();
+    if(/^-?\d+([.,]\d+)?$/.test(s)) return s.length<=5 ? s : s.slice(0,5);
+    if(s.length<=4) return s.toUpperCase();
+    const words = s.split(/\s+/).filter(Boolean);
+    if(words.length>1) return (words[0][0]+words[1][0]).toUpperCase();
+    return s.slice(0,3).toUpperCase();
+  }
+
+  // ---------------- MODEL HELPERS ----------------
+  function getNode(id){ return state.nodes.find(n=>n.id===id); }
+  function buildAdjacency(){
+    const adj = {};
+    state.nodes.forEach(n => adj[n.id] = []);
+    state.edges.forEach(e => {
+      if(adj[e.a]) adj[e.a].push({ to: e.b, edgeId: e.id });
+      if(adj[e.b]) adj[e.b].push({ to: e.a, edgeId: e.id });
+    });
+    Object.keys(adj).forEach(k => adj[k].sort((x,y)=> (x.to>y.to?1:x.to<y.to?-1:0) || (x.edgeId>y.edgeId?1:-1)));
+    return adj;
+  }
+
+  function addVertex(x,y){
+    let val = window.prompt("Digite o valor do vértice (nome de cidade, número ou texto):", "");
+    if(val === null) return; // cancelado
+    val = val.trim();
+    if(!val){ val = "V" + (state.vertexCounter + 1); }
+    if(state.nodes.some(n => n.id === val)){
+      alert(`Já existe um vértice chamado "${val}". Escolha um valor diferente.`);
+      return;
+    }
+    state.vertexCounter++;
+    state.nodes.push({ id: val, label: val, x, y });
+    renderAll();
+    log(`Vértice "${val}" inserido (isolado).`, "visit");
+  }
+
+  function addEdge(a,b){
+    if(a===b) return;
+    const val = window.prompt(
+      `Valor da ligação entre "${a}" e "${b}" — número ou texto (ex: distância, nome da rota). Deixe em branco se não quiser rótulo:`, ""
+    );
+    if(val === null) return; // cancelado, não cria ligação
+    const label = val.trim();
+    state.edgeCounter++;
+    const id = "e" + state.edgeCounter;
+    state.edges.push({ id, a, b, label });
+    renderAll();
+    log(`Ligação criada: ${a} — ${b}${label ? " [" + label + "]" : ""}.`, "visit");
+  }
+
+  function removeVertex(id){
+    state.nodes = state.nodes.filter(n=>n.id!==id);
+    state.edges = state.edges.filter(e=>e.a!==id && e.b!==id);
+    if(state.origin===id) state.origin=null;
+    if(state.dest===id) state.dest=null;
+    renderAll();
+    log(`Vértice ${id} removido (com todas as suas ligações).`, "visit");
+  }
+
+  function removeEdgeById(id){
+    const e = state.edges.find(x=>x.id===id);
+    state.edges = state.edges.filter(x=>x.id!==id);
+    renderAll();
+    if(e) log(`Ligação ${e.a} — ${e.b}${e.label ? " [" + e.label + "]" : ""} removida.`, "visit");
+  }
+
+  function clearRunState(){
+    document.querySelectorAll(".node").forEach(el=>{
+      el.classList.remove("visited-bfs","visited-dfs","current","on-path","selected");
+    });
+    document.querySelectorAll("path.edge").forEach(el=>{
+      el.classList.remove("used-bfs","used-dfs","on-path");
+    });
+    setActiveLine(-1);
+    structureRow.innerHTML = '<span style="color:var(--muted-2);font-size:11px;">vazia</span>';
+    pathResult.classList.remove("show");
+    pathResult.textContent = "";
+  }
+
+  function clearEverything(){
+    state.nodes = []; state.edges = []; state.origin=null; state.dest=null;
+    state.vertexCounter = 0; state.edgeCounter = 0;
+    logFeed.innerHTML = "";
+    renderAll();
+    clearRunState();
+  }
+
+  // ---------------- RENDER ----------------
+  function renderAll(){
+    edgesLayer.innerHTML = "";
+
+    // agrupa ligações por par (ordem canônica) para desenhar curvas paralelas no multigrafo
+    const groups = {};
+    state.edges.forEach(e=>{
+      const key = [e.a,e.b].slice().sort().join("␟");
+      (groups[key] = groups[key] || []).push(e);
+    });
+
+    Object.values(groups).forEach(group=>{
+      const total = group.length;
+      group.forEach((e, idx)=>{
+        const [pa,pb] = [e.a,e.b].slice().sort();
+        const na = getNode(pa), nb = getNode(pb);
+        if(!na || !nb) return;
+
+        const dx = nb.x-na.x, dy = nb.y-na.y;
+        const dist = Math.hypot(dx,dy) || 1;
+        const px = -dy/dist, py = dx/dist;
+        const offset = total===1 ? 0 : (idx - (total-1)/2) * 32;
+        const cx = (na.x+nb.x)/2 + px*offset;
+        const cy = (na.y+nb.y)/2 + py*offset;
+
+        const d = offset===0
+          ? `M ${na.x} ${na.y} L ${nb.x} ${nb.y}`
+          : `M ${na.x} ${na.y} Q ${cx} ${cy} ${nb.x} ${nb.y}`;
+
+        const hit = document.createElementNS(SVGNS,"path");
+        hit.setAttribute("d", d);
+        hit.setAttribute("class","edge-hit");
+        hit.dataset.edgeId = e.id;
+        hit.addEventListener("click",(ev)=>{
+          ev.stopPropagation();
+          if(state.mode==="remove") removeEdgeById(e.id);
+        });
+        edgesLayer.appendChild(hit);
+
+        const path = document.createElementNS(SVGNS,"path");
+        path.setAttribute("d", d);
+        path.setAttribute("class","edge");
+        path.dataset.edgeId = e.id;
+        edgesLayer.appendChild(path);
+
+        if(e.label){
+          const lp = offset===0 ? {x:cx,y:cy} : quadAt(na,{x:cx,y:cy},nb,0.5);
+          const t = document.createElementNS(SVGNS,"text");
+          t.setAttribute("x", lp.x);
+          t.setAttribute("y", lp.y - 4);
+          t.setAttribute("class","edge-label");
+          t.textContent = e.label;
+          edgesLayer.appendChild(t);
+        }
+      });
+    });
+
+    nodesLayer.innerHTML = "";
+    state.nodes.forEach(n=>{
+      const g = document.createElementNS(SVGNS,"g");
+      g.setAttribute("class","node");
+      g.setAttribute("transform", `translate(${n.x},${n.y})`);
+      g.dataset.id = n.id;
+      if(state.origin===n.id) g.classList.add("origin");
+      if(state.dest===n.id) g.classList.add("dest");
+
+      const circle = document.createElementNS(SVGNS,"circle");
+      circle.setAttribute("r", 24);
+
+      const idText = document.createElementNS(SVGNS,"text");
+      idText.setAttribute("class","node-id");
+      idText.textContent = shortText(n.label);
+
+      const caption = document.createElementNS(SVGNS,"text");
+      caption.setAttribute("class","node-caption");
+      caption.setAttribute("y", 38);
+      caption.textContent = n.label;
+
+      const title = document.createElementNS(SVGNS,"title");
+      title.textContent = n.label;
+
+      g.appendChild(circle); g.appendChild(idText); g.appendChild(caption); g.appendChild(title);
+      g.addEventListener("pointerdown",(ev)=>onNodePointerDown(ev,n));
+      g.addEventListener("click",(ev)=>onNodeClick(ev,n));
+      nodesLayer.appendChild(g);
+    });
+
+    const opts = ['<option value="">—</option>'].concat(
+      state.nodes.map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.label)}</option>`)
+    ).join("");
+    const prevO = originSelect.value, prevD = destSelect.value;
+    originSelect.innerHTML = opts; destSelect.innerHTML = opts;
+    if(state.nodes.some(n=>n.id===prevO)) originSelect.value = prevO;
+    if(state.nodes.some(n=>n.id===prevD)) destSelect.value = prevD;
+    state.origin = originSelect.value || null;
+    state.dest = destSelect.value || null;
+
+    runBtn.disabled = state.nodes.length < 2 || state.running;
+  }
+
+  // ---------------- INTERACTION ----------------
+  const MODE_HINTS = {
+    move: "Arraste um vértice existente para reposicioná-lo no grafo.",
+    vertex: "Clique em uma área vazia — uma janela pedirá o valor do vértice (nome de cidade, número ou texto).",
+    edge: "Clique em dois vértices para ligá-los. Você pode criar mais de uma ligação entre o mesmo par (multigrafo), cada uma com seu próprio valor.",
+    remove: "Clique em um vértice ou em uma ligação específica para excluí-la do grafo."
+  };
+  const CANVAS_STATUS = {
+    move: "Modo: mover vértice.",
+    vertex: "Modo: inserir vértice — clique em qualquer ponto livre.",
+    edge: "Modo: ligar com aresta — selecione dois vértices (multigrafo permitido).",
+    remove: "Modo: remover — clique em um vértice ou ligação."
+  };
+
+  function setMode(mode){
+    state.mode = mode;
+    state.edgeSelection = null;
+    document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
+    modeHint.textContent = MODE_HINTS[mode];
+    canvasStatus.textContent = CANVAS_STATUS[mode];
+    svg.classList.toggle("mode-move", mode==="move");
+    svg.classList.toggle("mode-remove", mode==="remove");
+    document.querySelectorAll(".node.selected").forEach(el=>el.classList.remove("selected"));
+  }
+
+  document.querySelectorAll(".mode-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=> setMode(btn.dataset.mode));
+  });
+
+  document.getElementById("bgRect").addEventListener("click",(ev)=>{
+    if(state.running) return;
+    if(state.mode==="vertex"){
+      const p = svgPoint(ev);
+      if(!tooClose(p.x,p.y)) addVertex(p.x,p.y);
+    } else if(state.mode==="edge"){
+      state.edgeSelection = null;
+      document.querySelectorAll(".node.selected").forEach(el=>el.classList.remove("selected"));
+    }
+  });
+
+  function onNodeClick(ev, n){
+    ev.stopPropagation();
+    if(state.running) return;
+    if(state.mode==="remove"){
+      removeVertex(n.id);
+    } else if(state.mode==="edge"){
+      if(!state.edgeSelection){
+        state.edgeSelection = n.id;
+        nodesLayer.querySelector(`[data-id="${CSS.escape(n.id)}"]`).classList.add("selected");
+        canvasStatus.textContent = `Origem da ligação: ${n.label}. Selecione o vértice de destino.`;
+      } else if(state.edgeSelection !== n.id){
+        const from = state.edgeSelection;
+        addEdge(from, n.id);
+        canvasStatus.textContent = CANVAS_STATUS.edge;
+        state.edgeSelection = null;
+        document.querySelectorAll(".node.selected").forEach(el=>el.classList.remove("selected"));
+      } else {
+        state.edgeSelection = null;
+        canvasStatus.textContent = CANVAS_STATUS.edge;
+        document.querySelectorAll(".node.selected").forEach(el=>el.classList.remove("selected"));
+      }
+    }
+  }
+
+  function onNodePointerDown(ev, n){
+    if(state.mode!=="move" || state.running) return;
+    ev.stopPropagation();
+    state.dragging = n.id;
+    svg.setPointerCapture(ev.pointerId);
+  }
+  svg.addEventListener("pointermove",(ev)=>{
+    if(!state.dragging) return;
+    const p = svgPoint(ev);
+    const n = getNode(state.dragging);
+    n.x = p.x; n.y = p.y;
+    renderAll();
+  });
+  svg.addEventListener("pointerup", ()=>{ state.dragging = null; });
+  svg.addEventListener("pointerleave", ()=>{ state.dragging = null; });
+
+  // ---------------- ALGO SWITCH ----------------
+  document.querySelectorAll(".algo-switch button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      if(state.running) return;
+      state.algo = btn.dataset.algo;
+      document.querySelectorAll(".algo-switch button").forEach(b=>b.classList.toggle("active", b===btn));
+      document.body.classList.toggle("dfs-active", state.algo==="dfs");
+      runBtn.classList.toggle("bfs", state.algo==="bfs");
+      runBtn.classList.toggle("dfs", state.algo==="dfs");
+      document.getElementById("brandDot").style.background = state.algo==="bfs" ? "var(--bfs)" : "var(--dfs)";
+      document.getElementById("brandDot").style.boxShadow = state.algo==="bfs" ? "0 0 10px var(--bfs)" : "0 0 10px var(--dfs)";
+      pseudoTitle.textContent = "Pseudocódigo · " + state.algo.toUpperCase();
+      structTitle.textContent = state.algo==="bfs" ? "Fila (FIFO)" : "Pilha (LIFO)";
+      renderPseudo();
+      clearRunState();
+    });
+  });
+
+  // ---------------- BFS / DFS ----------------
+  function bfsSteps(start, target, adj){
+    const steps = [];
+    const queue = [start];
+    const visited = new Set([start]);
+    const parent = {}, parentEdge = {};
+    steps.push({line:1, queue:[...queue], msg:`Fila inicializada com a origem [${start}].`});
+    steps.push({line:2, msg:`${start} marcado como visitado.`});
+    while(queue.length){
+      steps.push({line:3, msg:"Fila não está vazia — continua."});
+      const current = queue.shift();
+      steps.push({line:4, current, queue:[...queue], visit:current, msg:`Remove ${current} do início da fila.`});
+      if(current === target){
+        steps.push({line:5, current, found:true, msg:`${current} é o destino — caminho encontrado!`});
+        return { steps, found:true, parent, parentEdge };
+      }
+      for(const {to:nb, edgeId} of adj[current] || []){
+        steps.push({line:6, current, msg:`Verificar ligação de ${current} para ${nb}.`});
+        if(!visited.has(nb)){
+          visited.add(nb);
+          parent[nb] = current;
+          parentEdge[nb] = edgeId;
+          queue.push(nb);
+          steps.push({line:8, current, edgeId, queue:[...queue], visit:nb, msg:`${nb} não visitado → marca e insere na fila.`});
+        }
+      }
+    }
+    steps.push({line:3, found:false, msg:"Fila esvaziou — destino inalcançável a partir da origem."});
+    return { steps, found:false, parent, parentEdge };
+  }
+
+  function dfsSteps(start, target, adj){
+    const steps = [];
+    const stack = [start];
+    const visited = new Set();
+    const parent = {}, parentEdge = {};
+    steps.push({line:1, stack:[...stack], msg:`Pilha inicializada com a origem [${start}].`});
+    while(stack.length){
+      steps.push({line:3, msg:"Pilha não está vazia — continua."});
+      const current = stack.pop();
+      steps.push({line:4, stack:[...stack], msg:`Remove ${current} do topo da pilha.`});
+      if(visited.has(current)) continue;
+      visited.add(current);
+      steps.push({line:6, current, visit:current, msg:`Marca ${current} como visitado.`});
+      if(current === target){
+        steps.push({line:7, current, found:true, msg:`${current} é o destino — caminho encontrado!`});
+        return { steps, found:true, parent, parentEdge };
+      }
+      const neighbors = (adj[current] || []).slice().reverse();
+      for(const {to:nb, edgeId} of neighbors){
+        steps.push({line:8, current, msg:`Verificar ligação de ${current} para ${nb}.`});
+        if(!visited.has(nb)){
+          if(!(nb in parent)){ parent[nb] = current; parentEdge[nb] = edgeId; }
+          stack.push(nb);
+          steps.push({line:9, current, edgeId, stack:[...stack], msg:`${nb} não visitado → insere na pilha.`});
+        }
+      }
+    }
+    steps.push({line:3, found:false, msg:"Pilha esvaziou — destino inalcançável a partir da origem."});
+    return { steps, found:false, parent, parentEdge };
+  }
+
+  function reconstructPath(parent, start, target){
+    const path = [target];
+    let cur = target;
+    while(cur !== start){
+      cur = parent[cur];
+      if(cur === undefined) return null;
+      path.push(cur);
+    }
+    return path.reverse();
+  }
+
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  function log(msg, kind){
+    const div = document.createElement("div");
+    div.className = "entry" + (kind ? " "+kind : "");
+    div.textContent = msg;
+    logFeed.appendChild(div);
+    logFeed.scrollTop = 0;
+  }
+
+  function renderStructure(list){
+    if(!list || !list.length){
+      structureRow.innerHTML = '<span style="color:var(--muted-2);font-size:11px;">vazia</span>';
+      return;
+    }
+    structureRow.innerHTML = list.map(x=>`<span class="struct-box">${escapeHtml(getNode(x)?getNode(x).label:x)}</span>`).join("");
+  }
+
+  async function runSearch(){
+    if(state.running) return;
+    const origin = originSelect.value, dest = destSelect.value;
+    if(!origin || !dest){ log("Selecione origem e destino antes de buscar.", "found"); return; }
+    if(origin === dest){ log("Origem e destino são iguais — nada a buscar.", "found"); return; }
+
+    clearRunState();
+    logFeed.innerHTML = "";
+    state.running = true;
+    runBtn.disabled = true;
+    document.querySelectorAll(".mode-btn").forEach(b=>b.disabled=true);
+
+    const adj = buildAdjacency();
+    const result = state.algo === "bfs" ? bfsSteps(origin,dest,adj) : dfsSteps(origin,dest,adj);
+    const cls = state.algo === "bfs" ? "visited-bfs" : "visited-dfs";
+    const edgeCls = state.algo === "bfs" ? "used-bfs" : "used-dfs";
+    const delay = Number(speedSelect.value);
+
+    for(const step of result.steps){
+      setActiveLine(step.line);
+
+      document.querySelectorAll(".node.current").forEach(el=>el.classList.remove("current"));
+      if(step.current){
+        const el = nodesLayer.querySelector(`[data-id="${CSS.escape(step.current)}"]`);
+        if(el) el.classList.add("current");
+      }
+      if(step.visit){
+        const el = nodesLayer.querySelector(`[data-id="${CSS.escape(step.visit)}"]`);
+        if(el) el.classList.add(cls);
+      }
+      if(step.edgeId){
+        const line = edgesLayer.querySelector(`path.edge[data-edge-id="${CSS.escape(step.edgeId)}"]`);
+        if(line) line.classList.add(edgeCls);
+      }
+      if(step.queue) renderStructure(step.queue);
+      if(step.stack) renderStructure(step.stack);
+      if(step.msg) log(step.msg, step.found ? "found" : "visit");
+
+      await sleep(delay);
+    }
+
+    if(result.found){
+      const path = reconstructPath(result.parent, origin, dest);
+      if(path){
+        for(let i=0;i<path.length;i++){
+          const el = nodesLayer.querySelector(`[data-id="${CSS.escape(path[i])}"]`);
+          if(el) el.classList.add("on-path");
+          if(i>0){
+            const eid = result.parentEdge[path[i]];
+            const line = eid ? edgesLayer.querySelector(`path.edge[data-edge-id="${CSS.escape(eid)}"]`) : null;
+            if(line) line.classList.add("on-path");
+          }
+          await sleep(Math.max(80, delay/2));
+        }
+        const labels = path.map(id => getNode(id) ? getNode(id).label : id);
+        pathResult.textContent = `Caminho encontrado (${path.length-1} ligação${path.length-1===1?"":"ões"}): ${labels.join(" → ")}`;
+        pathResult.classList.add("show");
+      }
+    } else {
+      const oLabel = getNode(origin) ? getNode(origin).label : origin;
+      const dLabel = getNode(dest) ? getNode(dest).label : dest;
+      pathResult.textContent = `Nenhum caminho existe entre ${oLabel} e ${dLabel} neste grafo.`;
+      pathResult.classList.add("show");
+    }
+
+    document.querySelectorAll(".node.current").forEach(el=>el.classList.remove("current"));
+    setActiveLine(-1);
+    state.running = false;
+    runBtn.disabled = state.nodes.length < 2;
+    document.querySelectorAll(".mode-btn").forEach(b=>b.disabled=false);
+  }
+
+  runBtn.addEventListener("click", runSearch);
+  document.getElementById("clearRunBtn").addEventListener("click", clearRunState);
+  document.getElementById("clearGraphBtn").addEventListener("click", ()=>{
+    if(state.running) return;
+    if(confirm("Apagar todos os vértices e ligações do grafo?")) clearEverything();
+  });
+  originSelect.addEventListener("change", ()=>{ state.origin = originSelect.value||null; renderAll(); });
+  destSelect.addEventListener("change", ()=>{ state.dest = destSelect.value||null; renderAll(); });
+
+  // ---------------- INIT: exemplo de cidades ----------------
+  function seedExample(){
+    const coords = [
+      ["Recife",150,120],["Natal",400,80],["Salvador",640,140],["Fortaleza",880,100],
+      ["Aracaju",220,320],["Maceio",480,300],["Joao Pessoa",720,340],
+      ["Teresina",340,500],["Sao Luis",620,520]
+    ];
+    coords.forEach(([id,x,y])=>{ state.nodes.push({id,label:id,x,y}); });
+    state.vertexCounter = coords.length;
+
+    const links = [
+      ["Recife","Natal","120km"],["Natal","Salvador","95km"],["Salvador","Fortaleza","210km"],
+      ["Recife","Aracaju","60km"],["Natal","Maceio","150km"],["Maceio","Salvador","80km"],
+      ["Maceio","Salvador","rota litoral"],  // ligação extra entre o mesmo par: multigrafo
+      ["Maceio","Joao Pessoa","70km"],["Joao Pessoa","Fortaleza","190km"],
+      ["Aracaju","Teresina","300km"],["Maceio","Teresina","260km"],
+      ["Teresina","Sao Luis","110km"],["Joao Pessoa","Sao Luis","330km"]
+    ];
+    links.forEach(([a,b,label])=>{
+      state.edgeCounter++;
+      state.edges.push({ id:"e"+state.edgeCounter, a, b, label });
+    });
+
+    renderAll();
+    log("Grafo de exemplo carregado (cidades). Note as duas ligações Maceio—Salvador: exemplo de multigrafo.", "visit");
+  }
+
+  renderPseudo();
+  seedExample();
+  setMode("move");
+})();
+</script>
+</body>
+</html>     
